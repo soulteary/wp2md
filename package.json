@@ -1,0 +1,31 @@
+{
+  "name": "wp2md",
+  "version": "0.0.1",
+  "description": "Convert WordPress Posts to markdown files.",
+  "main": "wp2md",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soulteary/wp2md.git"
+  },
+  "keywords": [
+    "wordpress",
+    "markdown",
+    "convert"
+  ],
+  "author": "soulteary",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/soulteary/wp2md/issues"
+  },
+  "homepage": "https://github.com/soulteary/wp2md#readme",
+  "dependencies": {
+    "collapse-whitespace": "1.1.2",
+    "commander": "^2.9.0",
+    "fs-extra": "^0.26.5",
+    "jsdom": "^6.5.1",
+    "moment": "^2.12.0"
+  }
+}
