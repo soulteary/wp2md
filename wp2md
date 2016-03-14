@@ -3,15 +3,14 @@ var cmd = require('commander');
 
 cmd
     .version('0.0.1')
-    .usage('<exportFile Path>')
+    .usage('<exportFile Path> or <exportFile Path> timezone=off')
     .parse(process.argv);
 
-if (!cmd.args.length || cmd.args.length > 1) {
+if (!cmd.args.length || cmd.args.length > 2) {
     cmd.help();
     process.exit();
 }
-
-(function (exportFilePath) {
+(function (exportFilePath, timezoneFix) {
 
     var fse = require('fs-extra');
     var exportData = fse.readJSONSync(exportFilePath);
@@ -31,9 +30,16 @@ if (!cmd.args.length || cmd.args.length > 1) {
     var tagData = {};
 
     posts.map(function (post) {
+
+        var date = post.published_at;
+
+        if (timezoneFix === 'timezone=off') {
+            date = date.slice(0, -6);
+        }
+
         postData[post.id] = {
-            'date'         : post.created_at,
-            'dataFormated' : moment(Date.parse(post.created_at)).format('YYYY/MM/DD'),
+            'date'         : post.published_at,
+            'dataFormated' : moment(Date.parse(date)).format('YYYY/MM/DD'),
             'title'        : post.title,
             'slug'         : post.slug,
             'markdown'     : toMarkdown(post.html, {gfm : true}),
@@ -115,4 +121,4 @@ if (!cmd.args.length || cmd.args.length > 1) {
     });
 
     console.log('用户数据，请自行处理:', users);
-})(cmd.args[0]);
+}).apply(null, cmd.args);
