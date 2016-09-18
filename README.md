@@ -1,3 +1,5 @@
+![wp2md](./logo.png)
+
 # wp2md
 
 Convert WordPress Posts to markdown files.
@@ -22,3 +24,4 @@ Convert WordPress Posts to markdown files.
 
 - Q: **Why my export post's date is not correct? **
 - A: check your WordPress export data timestamp timezone setting, if you doesn't want to use timezone fix, use `./wp2md your_export_json_file_path timezone=off`.
+
