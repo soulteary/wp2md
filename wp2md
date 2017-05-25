@@ -38,11 +38,68 @@ if (!cmd.args.length || cmd.args.length > 2) {
         }
 
         var categories = post.categories ? post.categories.map(function(category) {
+
+          if (category.slug.indexOf('-learning') > -1 || category.slug === 'sql' || category.slug === 'reference-room') {
+            return [
+              {
+                name: '学习点滴',
+                slug: 'knowledge'
+              },
+              {
+                name: category.name,
+                slug: 'knowledge/' + category.slug,
+              }
+            ]
+          }
+
+          if (['uncategorized', 'trivia', 'diary'].indexOf(category.slug) > -1) {
+            return [
+              {
+                name: '生活点滴',
+                slug: 'life'
+              },
+              {
+                name: category.name,
+                slug: 'life/' + category.slug,
+              }
+            ]
+          }
+
+          if (['my-works', 'my-summary', 'my-design'].indexOf(category.slug) > -1) {
+            return [
+              {
+                name: '关于苏洋',
+                slug: 'about'
+              },
+              {
+                name: category.name,
+                slug: 'about/' + category.slug,
+              }
+            ]
+          }
+
+          if (['past-records', 'software', 'media', 'tips'].indexOf(category.slug) > -1) {
+            return [
+              {
+                name: '资源分享',
+                slug: 'share'
+              },
+              {
+                name: category.name,
+                slug: 'share/' + category.slug,
+              }
+            ]
+          }
+
           return {
             name: category.name,
             slug: category.slug,
           }
         }) : [];
+
+        categories = categories.reduce(function(prev, item) {
+          return prev.concat(item)
+        }, []);
 
         postData[post.id] = {
           'date': post.published_at,
