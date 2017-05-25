@@ -40,7 +40,7 @@ if (!cmd.args.length || cmd.args.length > 2) {
         var categories = post.categories ? post.categories.map(function(category) {
           return {
             name: category.name,
-            taxonomy: category.taxonomy,
+            slug: category.slug,
           }
         }) : [];
 
