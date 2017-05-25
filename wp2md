@@ -37,16 +37,27 @@ if (!cmd.args.length || cmd.args.length > 2) {
             date = date.slice(0, -6);
         }
 
+        var categories = post.categories ? post.categories.map(function(category) {
+          return {
+            name: category.name,
+            taxonomy: category.taxonomy,
+          }
+        }) : [];
+
         postData[post.id] = {
-            'date'         : post.published_at,
-            'dataFormated' : moment(Date.parse(date)).format('YYYY/MM/DD'),
-            'title'        : post.title,
-            'slug'         : post.slug,
-            'markdown'     : toMarkdown(post.html, {gfm : true}),
-            'image'        : post.image,
-            'page'         : post.page,
-            'status'       : post.status
+          'date': post.published_at,
+          'dataFormated': moment(Date.parse(date)).format('YYYY/MM/DD'),
+          'title': post.title,
+          'slug': post.slug,
+          'markdown': toMarkdown(post.html, {gfm: true}),
+          'image': post.image,
+          'page': post.page,
+          'status': post.status,
+          'categories': categories,
+          'created_at': post.created_at,
+          'updated_at': post.updated_at
         };
+
         if (post.image) post.imageHTML = '# 额外图片\n\n\n![](' + post.image + ')';
     });
 
