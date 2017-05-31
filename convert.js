@@ -1,32 +1,34 @@
+const fse = require('fs-extra');
+const moment = require('moment');
+const toMarkdown = require('./lib/to-markdown');
+const path = require('path');
+
+const CWD = process.cwd();
+
 module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
 
-  var fse = require('fs-extra');
-  var exportData = fse.readJSONSync(exportFilePath);
+  const exportData = fse.readJSONSync(exportFilePath);
 
-  var moment = require('moment');
-  var toMarkdown = require('./lib/to-markdown');
-  var path = require('path');
+  let {data} = exportData;
 
-  var data = exportData.data;
+  let {posts, tags, posts_tags, users} = data;
 
-  var posts = data.posts;
-  var tags = data.tags;
-  var posts_tags = data.posts_tags;
-  var users = data.users;
+  let disableTimeZoneFix = timezoneFix === 'timezone=off';
 
-  var postData = {};
-  var tagData = {};
+  let postData = {};
+  let tagData = {};
 
   posts.map(function(post) {
 
-    var date = post.published_at;
+    let date = post.published_at;
 
-    if (timezoneFix === 'timezone=off') {
+    if (disableTimeZoneFix) {
       date = date.slice(0, -6);
     }
 
-    var categories = [];
+    let categories = [];
 
+    // hack for myself
     if (useCustomCategories) {
       if (typeof useCustomCategories === true) {
         categories = post.categories ? post.categories.map(function(category) {
@@ -91,52 +93,51 @@ module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
       }
     }
 
+    // plain array
     categories = categories.reduce(function(prev, item) {
       return prev.concat(item)
     }, []);
 
+    const markdown = toMarkdown(post.html, {gfm: true});
     postData[post.id] = {
       'date': post.published_at,
       'dataFormated': moment(Date.parse(date)).format('YYYY/MM/DD'),
       'title': post.title,
       'slug': post.slug,
-      'markdown': toMarkdown(post.html, {gfm: true}),
+      markdown,
       'image': post.image,
       'page': post.page,
       'status': post.status,
-      'categories': categories,
+      categories,
       'created_at': post.created_at,
       'updated_at': post.updated_at
     };
 
     if (post.image) {
-      post.imageHTML = '# 额外图片\n\n\n![](' + post.image + ')';
+      post.imageHTML = `# 额外图片\n\n\n![](${post.image})`;
     }
   });
 
 
   tags.map(function(tag) {
-    tagData[tag.id] = {
-      id: tag.id,
-      name: tag.name,
-      slug: tag.slug
-    };
+    const {id, name, slug} = tag;
+    tagData[tag.id] = {id, name, slug};
   });
 
   posts_tags.map(function(data) {
-    if (postData.hasOwnProperty(data.post_id)) {
-      postData[data.post_id].tag = postData[data.post_id].tag || [];
-      postData[data.post_id].tag.push(data.tag_id);
+    const id = data.post_id;
+    if (postData.hasOwnProperty(id)) {
+      postData[id].tag = postData[id].tag || [];
+      postData[id].tag.push(data.tag_id);
     } else {
       console.log('不存在此文章ID', data, tagData[data.tag_id]);
     }
   });
 
-
-  var count = 0;
+  let count = 0;
   Object.keys(postData).map(function(id) {
-    var postPath = '';
-    var rootDir = path.resolve(process.cwd(), 'export/' + postData[id].status);
+    const rootDir = path.resolve(CWD, 'export/' + postData[id].status);
+    let postPath = '';
 
     // 将page页面单独保存
     if (postData[id].page !== 0) {
@@ -150,8 +151,9 @@ module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
         return console.error('初始化文章路径出现错误:', err);
       }
 
-      var filePath = '';
-      var needAlias = false;
+      let filePath = '';
+      let needAlias = false;
+
       // 含有转义中文路径的的文章使用中文名称保存
       if (postData[id].slug.indexOf('%') > -1) {
         needAlias = true;
@@ -159,6 +161,7 @@ module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
       } else {
         filePath = [postPath, postData[id].slug].join('/');
       }
+
       fse.outputFile(filePath + '.md',
           ['# ' + postData[id].title,
             postData[id].markdown,
@@ -171,10 +174,11 @@ module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
             delete postData[id].markdown;
 
             if (postData[id].tag) {
-              postData[id].tag = postData[id].tag.map(function(tagId) {
-                return tagData[tagId] ? tagData[tagId].name : '';
-              });
+              postData[id].tag = postData[id].tag.map(
+                  tagId => tagData[tagId] ? tagData[tagId].name : ''
+              );
             }
+
             if (needAlias) {
               postData[id].alias = postData[id].slug;
             }
@@ -185,7 +189,7 @@ module.exports = function(exportFilePath, timezoneFix, useCustomCategories) {
               }
             });
 
-            console.log('[' + (++count) + ']输出文件:', '.' + filePath.slice(rootDir.length));
+            console.log(`[${(++count)}]输出文件: .${filePath.slice(rootDir.length)}`);
           });
     });
   });
