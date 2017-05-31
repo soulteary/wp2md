@@ -1,6 +1,6 @@
 {
   "name": "wp2md",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Convert WordPress Posts to markdown files.",
   "main": "wp2md",
   "scripts": {
@@ -15,7 +15,7 @@
     "markdown",
     "convert"
   ],
-  "author": "soulteary",
+  "author": "soulteary <soulteary@qq.com>",
   "license": "GNU",
   "bugs": {
     "url": "https://github.com/soulteary/wp2md/issues"
