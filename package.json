@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/soulteary/wp2md#readme",
   "dependencies": {
-    "collapse-whitespace": "1.1.2",
+    "collapse-whitespace": "^1.1.2",
     "commander": "^2.9.0",
     "fs-extra": "^0.26.5",
     "jsdom": "^6.5.1",
