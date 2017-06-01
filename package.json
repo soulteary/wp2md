@@ -1,6 +1,6 @@
 {
   "name": "wp2md.js",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Convert WordPress Posts to markdown files.",
   "main": "wp2md",
   "scripts": {
