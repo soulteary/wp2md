@@ -4,6 +4,12 @@
 
 Convert WordPress Posts to markdown files.
 
+## example
+
+```
+./wp2md --export=/path_to_your_export_data/wp2ghost_export.json --timezone=on
+```
+
 ## FAQ
 
 - Q: **How to use?**
