@@ -2,14 +2,19 @@
 var cmd = require('commander');
 var convert = require('./convert');
 
+const pkg = require('./package.json');
+
 cmd
-    .version('0.0.1')
+    .version(pkg.version)
     .usage('<exportFile Path> or <exportFile Path> timezone=off')
+    .option('-e, --export [path]', 'Export File.')
+    .option('-t, --timezone', 'timezone fix')
+    .option('-u, --useCategoryHacks', 'use category hacks')
     .parse(process.argv);
 
-if (!cmd.args.length || cmd.args.length > 2) {
+if (!cmd.args.length || cmd.args.length > 4 || !cmd.export) {
     cmd.help();
     process.exit();
 }
 
-convert.apply(null, cmd.args);
+convert(cmd.export, cmd.timezone || 'off', cmd.useCategoryHacks || false);
