@@ -29,9 +29,49 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
             if (useCustomCategories) {
                 if (useCustomCategories === true) {
                     categories = post.categories ? post.categories.map(function (category) {
-                        console.log(category)
+                        console.log(category);
 
                         if (category.slug.indexOf('-learning') > -1 || category.slug === 'sql' || category.slug === 'reference-room') {
+
+                            const catsMap = {
+                                'backend-knowledge': [
+                                    'backend-knowledge',
+                                    'c-learning',
+                                    'php-learning',
+                                    'asp-learning',
+                                    'sql'
+                                ],
+                                'system-knowledge': [
+                                    'system-knowledge',
+                                    'dos-learning',
+                                    'windows-learning',
+                                    'linux-learning',
+                                    'system-knowledge'
+                                ],
+                                'frontend-knowledge': [
+                                    'frontend-knowledge',
+                                    'web-learning',
+                                    'javascript-learning',
+                                    'css-learning',
+                                    'html-learning'
+                                ],
+                                'desktop-knowledge': [
+                                    'desktop-knowledge',
+                                    'desktop-knowledge',
+                                    'vb-learning'
+                                ],
+                                'reference-room': [
+                                    'reference-room'
+                                ]
+                            };
+
+                            Object.keys(catsMap).forEach(function (label) {
+                                if (catsMap[label].indexOf(category.slug) > -1) {
+                                    category.slug = label;
+                                }
+                            });
+
+
                             return [
                                 {
                                     name: '学习点滴',
@@ -39,7 +79,7 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                                 },
                                 {
                                     name: category.name,
-                                    slug: 'knowledge/' + category.slug,
+                                    slug: '' + category.slug,
                                 }
                             ]
                         }
@@ -70,7 +110,7 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                             ]
                         }
 
-                        if (['past-records', 'software', 'media', 'tips'].indexOf(category.slug) > -1) {
+                        if (['past-records', 'software', 'media', 'tips', 'leisure-moment'].indexOf(category.slug) > -1) {
                             return [
                                 {
                                     name: '资源分享',
@@ -168,33 +208,33 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                     filePath = [postPath, postData[id].slug].join('/');
                 }
 
+                let markdownContent = postData[id].markdown;
+                delete postData[id].markdown;
+
+                if (postData[id].tag) {
+                    postData[id].tag = postData[id].tag.map(
+                        tagId => tagData[tagId] ? tagData[tagId].name : ''
+                    );
+                }
+
+                if (needAlias) {
+                    postData[id].alias = postData[id].slug;
+                }
+
+                fse.outputJSON(filePath + '.json', postData[id], function (err) {
+                    if (err) {
+                        return console.error('输出博客META文件出现错误:', err);
+                    }
+                });
+
                 fse.outputFile(filePath + '.md',
                     ['# ' + postData[id].title,
-                        postData[id].markdown,
+                        markdownContent,
                         postData[id].imageHTML
                     ].join('\n\n'), function (err) {
                         if (err) {
                             return console.error('输出博客文章出现错误:', err);
                         }
-
-                        delete postData[id].markdown;
-
-                        if (postData[id].tag) {
-                            postData[id].tag = postData[id].tag.map(
-                                tagId => tagData[tagId] ? tagData[tagId].name : ''
-                            );
-                        }
-
-                        if (needAlias) {
-                            postData[id].alias = postData[id].slug;
-                        }
-
-                        fse.outputJSON(filePath + '.json', postData[id], function (err) {
-                            if (err) {
-                                return console.error('输出博客META文件出现错误:', err);
-                            }
-                        });
-
                         console.log(`[${(++count)}]输出文件: .${filePath.slice(rootDir.length)}`);
                     });
             });
