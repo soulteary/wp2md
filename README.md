@@ -4,11 +4,17 @@
 
 Convert WordPress Posts to markdown files.
 
+Split post meta into json and content into markdown.
+
 ## example
 
 ```
 ./wp2md --export=/path_to_your_export_data/wp2ghost_export.json --timezone=on
 ```
+
+## export result
+
+![export result](./wp2md-export.png)
 
 ## FAQ
 
