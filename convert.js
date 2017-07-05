@@ -31,7 +31,9 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                     categories = post.categories ? post.categories.map(function (category) {
                         console.log(category);
 
-                        if (category.slug.indexOf('-learning') > -1 || category.slug === 'sql' || category.slug === 'reference-room') {
+                        if (category.slug.indexOf('-learning') > -1 ||
+                            category.slug.indexOf('-knowledge') > -1 ||
+                            category.slug === 'sql' || category.slug === 'reference-room') {
 
                             const catsMap = {
                                 'backend-knowledge': [
@@ -79,7 +81,7 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                                 },
                                 {
                                     name: category.name,
-                                    slug: '' + category.slug,
+                                    slug: 'knowledge/' + category.slug,
                                 }
                             ]
                         }
