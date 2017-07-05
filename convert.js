@@ -5,7 +5,7 @@ const path = require('path');
 
 const CWD = process.cwd();
 
-module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
+module.exports = function (exportFilePath, timezoneFix, useCustomCategories, customCategoriesFn) {
 
     const exportData = fse.readJSONSync(path.relative('.', exportFilePath));
 
@@ -26,11 +26,12 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
 
             let categories = [];
             // hack for myself
-            if (useCustomCategories) {
-                if (useCustomCategories === true) {
+            if (useCustomCategories === true) {
+                if (typeof customCategoriesFn === 'function') {
+                    let customFnResult = customCategoriesFn(post.categories);
+                    categories = customFnResult ? customFnResult : [];
+                } else {
                     categories = post.categories ? post.categories.map(function (category) {
-                        console.log(category);
-
                         if (category.slug.indexOf('-learning') > -1 ||
                             category.slug.indexOf('-knowledge') > -1 ||
                             category.slug === 'sql' || category.slug === 'reference-room') {
@@ -72,7 +73,6 @@ module.exports = function (exportFilePath, timezoneFix, useCustomCategories) {
                                     category.slug = label;
                                 }
                             });
-
 
                             return [
                                 {
